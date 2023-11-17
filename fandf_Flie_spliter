@@ -56,7 +56,7 @@ def move_files_to_year_and_month_folders(input_folder: str):
 
 def main():
     # Example usage
-    input_folder_address = "/path/to/your/input/folder"
+    input_folder_address = r"C:\Users\simon.munns\OneDrive - Health Education England\Documents\sm BI\Natinal Bi\sprint 132\Data\FFT A&E_test\Sites1"
     move_files_to_year_and_month_folders(input_folder_address)
 
 
