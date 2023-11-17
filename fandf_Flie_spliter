@@ -19,7 +19,7 @@ def extract_month_and_year(file_name: str) -> Tuple[int, int]:
     return date_obj.year, date_obj.month
 
 def move_file_to_year_and_month_folders(file_name: str):
-    ""
+    """
     Moves the file directly into the year and month subfolders in the specified format.
 
     Args:
@@ -49,3 +49,76 @@ def move_file_to_year_and_month_folders(file_name: str):
 # Example usage
 file_name = "fft ae 2013.04 Apr.sites.csv"
 move_file_to_year_and_month_folders(file_name)
+Save to grepper
+This script will move the file directly into the year and month subfolders without creating an intermediate folder.
+
+
+
+
+User
+have it first take in a in put floder address
+loop thoug all the folders
+and out put in a new folders
+ChatGPT
+Certainly! The modified script now takes an input folder address, loops through all the files in that folder, extracts the month and year from each file name, and moves each file into the corresponding year and month subfolders.
+
+python
+Copy code
+import os
+import shutil
+from datetime import datetime
+from typing import Tuple
+
+def extract_month_and_year(file_name: str) -> Tuple[int, int]:
+    """
+    Extracts the month and year from the given file name.
+
+    Args:
+        file_name (str): The name of the file.
+
+    Returns:
+        Tuple[int, int]: A tuple containing the year and month.
+    """
+    # Extracting year and month from the file name
+    date_str = file_name.split()[2]  # Assuming the year and month are in the third part of the file name
+    date_obj = datetime.strptime(date_str, '%Y.%m')
+    return date_obj.year, date_obj.month
+
+def move_files_to_year_and_month_folders(input_folder: str):
+    """
+    Moves files in the input folder directly into the year and month subfolders in the specified format.
+
+    Args:
+        input_folder (str): The path to the input folder.
+    """
+    for file_name in os.listdir(input_folder):
+        file_path = os.path.join(input_folder, file_name)
+        if os.path.isfile(file_path):
+            # Extracting year and month from the file name
+            year, month = extract_month_and_year(file_name)
+
+            # Creating year folder in the Google style guide format
+            year_folder = f"y{year}"
+
+            # Creating month subfolder in the Google style guide format
+            month_subfolder = f"m{month}"
+
+            # Creating the year folder if it doesn't exist
+            if not os.path.exists(os.path.join(input_folder, year_folder)):
+                os.makedirs(os.path.join(input_folder, year_folder))
+
+            # Creating the month subfolder inside the year folder if it doesn't exist
+            month_folder_path = os.path.join(input_folder, year_folder, month_subfolder)
+            if not os.path.exists(month_folder_path):
+                os.makedirs(month_folder_path)
+
+            # Moving the file into the year and month subfolders
+            shutil.move(file_path, os.path.join(month_folder_path, file_name))
+
+def main():
+    # Example usage
+    input_folder_address = "/path/to/your/input/folder"
+    move_files_to_year_and_month_folders(input_folder_address)
+
+if __name__ == "__main__":
+    main()
