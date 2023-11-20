@@ -1,15 +1,24 @@
+import configparser
 import os
 import sys
-
-sys.path.append("/tests/test_setup")
 import unittest
+import shutil
+
+sys.path.append(".")
+
+# sys.path.append(
+#     r"C:\Users\simon.munns\OneDrive - Health Education England\Documents\sm BI\Natinal Bi\sprint 132\FandF\tests\test_setup.py"
+# )
+
 from io import StringIO
 from unittest.mock import patch
 
-# Todo can not work out why this is not working
-from test_setup import TestEnvironmentSetup
+##
 
-from main import (
+
+# from setup import TestEnvironmentSetup it will not take the extruanl souce
+sys.path.append(r"C:\Users\simon.munns\OneDrive - Health Education England\Documents\sm BI\Natinal Bi\sprint 132\FandF\main_setup.py")  # type: ignore
+from main_setup import (
     extract_month_and_year,
     main,
     move_file_to_year_and_month_folders,
@@ -18,14 +27,41 @@ from main import (
 
 
 class TestYourScript(unittest.TestCase):
-    def setUp(self):
-        # Set up a temporary directory for testing
+    """Test cases for YourScript."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up a temporary directory for testing."""
+
+        class TestEnvironmentSetup:
+            # Todo I need to check the file location is free befor it tests ot make a new one sadly. I can also cehck teh root is ok
+            def __init__(self, config_file="config.txt"):
+                # Use '..' to go up one level from the current working directory
+                config_path = os.path.join(os.path.dirname(__file__), config_file)
+                self.config = self.load_config(config_path)
+                self.test_dir = self.config.get(
+                    "config", "test_dir", fallback="test_temp_directory"
+                )
+
+            def load_config(self, config_file):
+                config = configparser.ConfigParser()
+                config.read(config_file)
+                return config
+
+            def setup_test_directory(self):
+                os.makedirs(self.test_dir)
+
+            def teardown_test_directory(self):
+                os.rmdir(self.test_dir)
+
         cls.test_environment_setup = TestEnvironmentSetup()
         cls.test_environment_setup.setup_test_directory()
 
-    def tearDown(self):
-        # Remove the temporary directory after testing
-        os.rmdir(self.test_dir)
+    @classmethod
+    def tearDownClass(cls):
+        """Remove the temporary directory after testing."""
+        os.rmdir(cls.test_environment_setup.test_dir)
+        cls.test_environment_setup.teardown_test_directory()
 
     def test_extract_month_and_year_valid_format(self):
         """
@@ -65,7 +101,7 @@ class TestYourScript(unittest.TestCase):
 
         """
         # Create a temporary file for testing
-        test_file = os.path.join(self.test_dir, "test_file.csv")
+        test_file = os.path.join(self.test_environment_setup.test_dir, "test_file.csv")
         with open(test_file, "w") as f:
             f.write("Test content")
 
@@ -73,7 +109,7 @@ class TestYourScript(unittest.TestCase):
         move_file_to_year_and_month_folders(test_file)
 
         # Check if the folders have been created
-        year_folder = os.path.join(self.test_dir, "y2022")
+        year_folder = os.path.join(self.test_environment_setup.test_dir, "y2022")
         month_folder = os.path.join(year_folder, "m11")
         self.assertTrue(os.path.exists(year_folder))
         self.assertTrue(os.path.exists(month_folder))
@@ -87,7 +123,7 @@ class TestYourScript(unittest.TestCase):
         and checks if 'main' is executed without errors.
 
         """
-        with patch.object(sys, "argv", ["script.py", "input_folder_address"]):
+        with patch.object(sys, "argv", ["script.py", "input_folder_address"]):  # type: ignore
             # Replace 'script.py' and 'input_folder_address' with actual script and folder address
             with patch("builtins.print") as mock_print:
                 main()
@@ -126,7 +162,7 @@ class TestYourScript(unittest.TestCase):
         sys.stdout = StringIO()
 
         # Print the folder tree
-        print_folder_tree(self.test_dir)
+        print_folder_tree(self.test_environment_setup.test_dir)
 
         # Get the printed output
         printed_output = sys.stdout.getvalue()
@@ -137,7 +173,3 @@ class TestYourScript(unittest.TestCase):
         # Check if the expected output is in the printed output
         expected_output = "Folder Tree Structure:"
         self.assertIn(expected_output, printed_output)
-
-
-if __name__ == "__main__":
-    unittest.main()
