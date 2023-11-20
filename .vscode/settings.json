@@ -1,3 +1,12 @@
 {
-    "iis.configDir": ""
+    "iis.configDir": "",
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true
 }
