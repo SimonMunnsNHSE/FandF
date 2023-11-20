@@ -4,7 +4,7 @@ import unittest
 
 
 class TestEnvironmentSetup:
-    def __init__(self, config_file="../config.txt"):
+    def __init__(self, config_file="config.txt"):
         # Use '..' to go up one level from the current working directory
         config_path = os.path.join(os.path.dirname(__file__), config_file)
         self.config = self.load_config(config_path)
@@ -22,7 +22,3 @@ class TestEnvironmentSetup:
 
     def teardown_test_directory(self):
         os.rmdir(self.test_dir)
-
-
-if __name__ == "__main__":
-    unittest.main()
