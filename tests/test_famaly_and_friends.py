@@ -3,6 +3,7 @@ import os
 import sys
 import unittest
 import shutil
+import pdb
 
 sys.path.append(".")
 
@@ -49,10 +50,12 @@ class TestYourScript(unittest.TestCase):
                 return config
 
             def setup_test_directory(self):
-                os.makedirs(self.test_dir)
+                with patch(self.test_dir):
+                    cls.test_environment_setup.setup_test_directory()
 
             def teardown_test_directory(self):
-                os.rmdir(self.test_dir)
+                with patch(self.test_dir):
+                    cls.test_environment_setup.teardown_test_directory()
 
         cls.test_environment_setup = TestEnvironmentSetup()
         cls.test_environment_setup.setup_test_directory()
@@ -60,6 +63,7 @@ class TestYourScript(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Remove the temporary directory after testing."""
+        pdb.set_trace()
         os.rmdir(cls.test_environment_setup.test_dir)
         cls.test_environment_setup.teardown_test_directory()
 
