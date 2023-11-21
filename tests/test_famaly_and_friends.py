@@ -1,9 +1,9 @@
 import configparser
 import os
+import pdb
+import shutil
 import sys
 import unittest
-import shutil
-import pdb
 
 sys.path.append(".")
 
@@ -12,7 +12,7 @@ sys.path.append(".")
 # )
 
 from io import StringIO
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 ##
 
@@ -36,12 +36,15 @@ class TestYourScript(unittest.TestCase):
 
         class TestEnvironmentSetup:
             # Todo I need to check the file location is free befor it tests ot make a new one sadly. I can also cehck teh root is ok
+
             def __init__(self, config_file="config.txt"):
                 # Use '..' to go up one level from the current working directory
                 config_path = os.path.join(os.path.dirname(__file__), config_file)
                 self.config = self.load_config(config_path)
+
+                # Assume 'General' is the section name in your config file
                 self.test_dir = self.config.get(
-                    "config", "test_dir", fallback="test_temp_directory"
+                    "General", r"test_dir", fallback="test_temp_directory"
                 )
 
             def load_config(self, config_file):
@@ -58,12 +61,12 @@ class TestYourScript(unittest.TestCase):
                     cls.test_environment_setup.teardown_test_directory()
 
         cls.test_environment_setup = TestEnvironmentSetup()
-        cls.test_environment_setup.setup_test_directory()
+        # cls.test_environment_setup.setup_test_directory()
 
     @classmethod
     def tearDownClass(cls):
         """Remove the temporary directory after testing."""
-        pdb.set_trace()
+
         os.rmdir(cls.test_environment_setup.test_dir)
         cls.test_environment_setup.teardown_test_directory()
 
@@ -95,6 +98,7 @@ class TestYourScript(unittest.TestCase):
             result, (0, 0)
         )  # You might want to choose a specific default value
 
+    # to
     def test_move_file_to_year_and_month_folders(self):
         """
         Test the movement of a file to year and month folders.
@@ -106,11 +110,19 @@ class TestYourScript(unittest.TestCase):
         """
         # Create a temporary file for testing
         test_file = os.path.join(self.test_environment_setup.test_dir, "test_file.csv")
-        with open(test_file, "w") as f:
+        with open(
+            test_file,
+            "w",
+        ) as f:
             f.write("Test content")
+            f.close()
 
-        # Move the file to year and month folders
-        move_file_to_year_and_month_folders(test_file)
+        # Mock os.makedirs to avoid actual directory creation
+        with patch("os.makedirs"):
+            # Mock os.path.exists to simulate directory existence
+            with patch("os.path.exists", side_effect=[False, False, False, True]):
+                # Move the file to year and month folders
+                move_file_to_year_and_month_folders(test_file)
 
         # Check if the folders have been created
         year_folder = os.path.join(self.test_environment_setup.test_dir, "y2022")
@@ -142,7 +154,7 @@ class TestYourScript(unittest.TestCase):
         arguments and checks if 'sys.exit' is called with the correct status.
 
         """
-        with patch.object(sys, "argv", ["script.py"]):
+        with patch.object(sys, "argv", self.test_environment_setup.test_dir):
             with patch("sys.exit") as mock_exit:
                 main()
 
