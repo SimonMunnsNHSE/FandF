@@ -71,27 +71,21 @@ class TestYourScript(unittest.TestCase):
         cls.test_environment_setup.teardown_test_directory()
 
     def test_extract_month_and_year_valid_format(self):
-        """
-        Test the extraction of month and year from a valid file name format.
-
-        The function uses the 'extract_month_and_year' function to extract the
-        month and year from a valid file name format and asserts that the result
-        matches the expected values.
-
-        """
-        file_name = "fft ae 2013.04 Apr.sites.csv"
+        file_name = "2023-11_file.txt"
         result = extract_month_and_year(file_name)
-        self.assertEqual(result, (2013, 4))
+        self.assertEqual(result, (2023, 11))
+
+    def test_extract_month_and_year_month_string_april(self):
+        file_name = "2023-April_file.txt"
+        result = extract_month_and_year(file_name)
+        self.assertEqual(result, (2023, 4))
+
+    def test_extract_month_and_year_month_string_short_apr(self):
+        file_name = "2023-Apr_file.txt"
+        result = extract_month_and_year(file_name)
+        self.assertEqual(result, (2023, 4))
 
     def test_extract_month_and_year_invalid_format(self):
-        """
-        Test the extraction of month and year from an invalid file name format.
-
-        The function uses the 'extract_month_and_year' function to extract the
-        month and year from an invalid file name format and asserts that the
-        result does not match a specific default value.
-
-        """
         file_name = "invalid_file_name.csv"
         result = extract_month_and_year(file_name)
         self.assertNotEqual(

@@ -4,6 +4,8 @@ from datetime import datetime
 import os
 import shutil
 import sys
+from file_operations import FileOperations
+from your_module_name import EnvironmentSetup
 
 
 def extract_month_and_year(file_name: str) -> Tuple[int, int]:
@@ -18,6 +20,10 @@ def extract_month_and_year(file_name: str) -> Tuple[int, int]:
 
     >>> extract_month_and_year("2023-11_file.txt")
     (2023, 11)
+    >>> extract_month_and_year("2023-April_file.txt")
+    (2023, 4)
+    >>> extract_month_and_year("2023-Apr_file.txt")
+    (2023, 4)
     """
     # Regular expression pattern for matching yyyy.mm or mm.yyyy
     pattern = re.compile(r"(\d{4})[.-](\d{2})")
@@ -27,7 +33,27 @@ def extract_month_and_year(file_name: str) -> Tuple[int, int]:
         year, month = map(int, match.groups())
         return year, month
     else:
-        # Default to current year and month if the pattern is not found
+        # Try to find month strings in the file name and map them to numeric values
+        month_strings = [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+        ]
+        for index, month_str in enumerate(month_strings, start=1):
+            if month_str in file_name.lower():
+                current_date = datetime.now()
+                return current_date.year, index
+
+        # Default to current year and month if no pattern or relevant month string is found
         current_date = datetime.now()
         return current_date.year, current_date.month
 
@@ -62,7 +88,6 @@ def move_file_to_year_and_month_folders(file_path: str):
 
     # Destination path for the file in the year and month subfolders
     destination_path = os.path.join(month_folder_path, os.path.basename(file_path))
-
     # Check if the file already exists in the destination folder
     if os.path.exists(destination_path):
         print(
@@ -94,7 +119,14 @@ def main():
         print("Usage: python script.py <input_folder_address>")
         sys.exit(1)
 
-    input_folder_address = sys.argv[1]
+    input_folder_address = sys.argv[1] if len(sys.argv) > 1 else "."
+    test_mode = bool(int(sys.argv[2])) if len(sys.argv) > 2 else True
+
+    # Instantiate EnvironmentSetup based on command line arguments
+    env_setup = EnvironmentSetup(is_test=test_mode)
+
+    file_ops = FileOperations(input_folder_address)
+    file_ops.to_empty_folder()
 
     # Move files to year and month folders
     for root, _, files in os.walk(input_folder_address):
