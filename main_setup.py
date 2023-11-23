@@ -5,7 +5,7 @@ import os
 import shutil
 import sys
 from file_operations import FileOperations
-from your_module_name import EnvironmentSetup
+from environment_setup import EnvironmentSetup
 
 
 def extract_month_and_year(file_name: str) -> Tuple[int, int]:
@@ -124,7 +124,7 @@ def main():
 
     # Instantiate EnvironmentSetup based on command line arguments
     env_setup = EnvironmentSetup(is_test=test_mode)
-
+    env_setup.setup_directory()
     file_ops = FileOperations(input_folder_address)
     file_ops.to_empty_folder()
 

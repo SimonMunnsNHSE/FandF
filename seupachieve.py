@@ -4,7 +4,7 @@ import shutil
 from datetime import datetime
 
 
-class FileOperations:
+class seupAchieve:
     """
     A class containing file operations to manage "test_data" and "test_archive" folders.
 
@@ -17,7 +17,7 @@ class FileOperations:
 
     def __init__(self, root_folder):
         """
-        Initialize the FileOperations instance.
+        Initialize the seupAchive instance.
 
         Args:
             root_folder (str): The root folder path.
@@ -35,7 +35,7 @@ class FileOperations:
             None
 
         Examples:
-            >>> file_ops = FileOperations("/path/to/root")
+            >>> file_ops = seupAchive("/path/to/root")
             >>> file_ops.create_folders_if_not_exist()
             >>> os.path.exists("/path/to/root/test_data")
             True
@@ -58,7 +58,7 @@ class FileOperations:
             None
 
         Examples:
-            >>> file_ops = FileOperations("/path/to/root")
+            >>> file_ops = seupAchive("/path/to/root")
             >>> os.makedirs("/path/to/root/test_data/folder_to_move")
             >>> file_ops.move_folders("/path/to/root/test_data", "/path/to/root/test_archive")
             >>> os.path.exists("/path/to/root/test_archive/folder_to_move")
@@ -80,7 +80,7 @@ class FileOperations:
             None
 
         Examples:
-            >>> file_ops = FileOperations("/path/to/root")
+            >>> file_ops = seupAchive("/path/to/root")
             >>> os.makedirs("/path/to/root/test_archive/active")
             >>> with open("/path/to/root/test_archive/active/file.txt", "w") as file:
             ...     file.write("content")
@@ -105,7 +105,7 @@ class FileOperations:
             None
 
         Examples:
-            >>> file_ops = FileOperations("/path/to/root")
+            >>> file_ops = seupAchive("/path/to/root")
             >>> file_ops.to_empty_folder()
         """
         self.create_folders_if_not_exist()
