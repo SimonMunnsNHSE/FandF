@@ -5,8 +5,11 @@ import unittest
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-sys.path.append(r"C:\Users\simon.munns\OneDrive - Health Education England\Documents\sm BI\Natinal Bi\sprint 132\FandF\seupachieve.py")  # type: ignore
-from seupachieve import seupAchieve
+sys.path.append(r"C:\Users\simon.munns\OneDrive - Health Education England\Documents\sm BI\Natinal Bi\sprint 132\FandF\environment_setup.py")  # type: ignore
+from ..environment_setup import EnvironmentSetup
+
+sys.path.append(r"C:\Users\simon.munns\OneDrive - Health Education England\Documents\sm BI\Natinal Bi\sprint 132\FandF\set_up_achieve.py")  # type: ignore
+from ..set_up_achieve import seupAchieve
 
 
 class TestToEmptyFolder(unittest.TestCase):
@@ -16,33 +19,7 @@ class TestToEmptyFolder(unittest.TestCase):
 
     @classmethod
     def setUp(cls):
-        class TestEnvironmentSetup:
-            # Todo I need to check the file location is free befor it tests ot make a new one sadly. I can also cehck teh root is ok
-
-            def __init__(self, config_file="config.txt"):
-                # Use '..' to go up one level from the current working directory
-                config_path = os.path.join(os.path.dirname(__file__), config_file)
-                self.config = self.load_config(config_path)
-
-                # Assume 'General' is the section name in your config file
-                self.test_dir = self.config.get(
-                    "General", r"test_dir", fallback="test_temp_directory"
-                )
-
-            def load_config(self, config_file):
-                config = configparser.ConfigParser()
-                config.read(config_file)
-                return config
-
-            def setup_test_directory(self):
-                with patch(self.test_dir):
-                    cls.test_environment_setup.setup_test_directory()
-
-            def teardown_test_directory(self):
-                with patch(self.test_dir):
-                    cls.test_environment_setup.teardown_test_directory()
-
-        cls.test_environment_setup = TestEnvironmentSetup()
+        cls.test_environment_setup = EnvironmentSetup(is_test=test_mode)
 
     def test_create_folders_if_not_exist(self):
         """

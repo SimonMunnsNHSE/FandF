@@ -1,6 +1,7 @@
 import os
 import sys
 import configparser
+import pdb
 from unittest.mock import patch
 
 
@@ -23,8 +24,26 @@ class EnvironmentSetup:
             is_test (bool): True if it's a test environment, False for live environment. Defaults to True.
         """
         # Use '..' to go up one level from the current working directory
+
         config_path = os.path.join(os.path.dirname(__file__), config_file)
-        self.config = self.load_config(config_path)
+        try:
+            config_path = os.path.join(os.path.dirname(__file__), config_file)
+            self.config = self.load_config(config_path)
+            if not self.config:
+                raise FileNotFoundError("Config file not found")
+        except FileNotFoundError as e:
+            # Handle the exception (config file not found)
+            print(f"Error: {e}")
+            try:
+                # Try loading the config from the 'tests' directory
+                alt_config_path = os.path.join("tests", config_file)
+                self.config = self.load_config(alt_config_path)
+                if not self.config:
+                    raise FileNotFoundError("Alternate config file not found")
+            except FileNotFoundError as alt_e:
+                # Handle the exception (alternate config file not found)
+                print(f"Error: {alt_e}")
+                print("No valid config file found.")
 
         # Assume 'General' is the section name in your config file
         self.base_dir_key = "test_dir" if is_test else "live_dir"

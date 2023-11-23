@@ -23,9 +23,48 @@ class seupAchieve:
             root_folder (str): The root folder path.
         """
         self.root_folder = root_folder
-        self.test_data_path = os.path.join(root_folder, "test_data")
-        self.test_archive_path = os.path.join(root_folder, "test_archive")
-        self.active_folder_path = os.path.join(self.test_archive_path, "active")
+
+        if self.navigate_up_to_folder(root_folder, "test_data") != "":
+            self.test_data_path = self.navigate_up_to_folder(root_folder, "test_data")
+        else:
+            self.test_data_path = os.path.join(root_folder, "test_data")
+        if "test_archive" not in root_folder:
+            self.test_archive_path = os.path.join(root_folder, "test_archive")
+
+        if self.navigate_up_to_folder(root_folder, "test_archive") != "":
+            self.test_archive_path = self.navigate_up_to_folder(
+                root_folder, "test_archive"
+            )
+        else:
+            self.test_data_path = os.path.join(root_folder, "test_archive")
+
+        if self.navigate_up_to_folder(root_folder, "active") != "":
+            self.test_archive_path = self.navigate_up_to_folder(root_folder, "active")
+        else:
+            self.test_data_path = os.path.join(root_folder, "active")
+
+    def navigate_up_to_folder(self, start_path, target_folder):
+        """
+        Navigate up the directory structure from the given start path until finding the target folder.
+
+        Args:
+            start_path (str): The starting path from which to navigate.
+            target_folder (str): The name of the target folder to find.
+
+        Returns:
+            str: The path to the target folder if found, or an empty string if not found.
+        """
+        current_path = os.path.abspath(start_path)
+
+        while os.path.basename(current_path) != target_folder:
+            # Move up one level in the directory structure
+            current_path = os.path.dirname(current_path)
+
+            # Break if we reach the root directory
+            if current_path == os.path.dirname(current_path):
+                return ""
+
+        return current_path
 
     def create_folders_if_not_exist(self):
         """
@@ -64,10 +103,14 @@ class seupAchieve:
             >>> os.path.exists("/path/to/root/test_archive/folder_to_move")
             True
         """
+        item_path_list = []
         for item in os.listdir(source_folder):
             item_path = os.path.join(source_folder, item)
             if os.path.isdir(item_path) and not item.startswith("_"):
                 shutil.move(item_path, os.path.join(destination_folder, item))
+                item_path_list.append(item_path)
+
+        return item_path_list
 
     def add_timestamp_to_new_files(self, folder):
         """
@@ -88,6 +131,9 @@ class seupAchieve:
             >>> os.path.exists("/path/to/root/test_archive/active/file_{}.txt".format(datetime.now().strftime('%Y%m%d%H%M%S')))
             True
         """
+        import pdb
+
+        pdb.set_trace()
         for item in os.listdir(folder):
             item_path = os.path.join(folder, item)
             if os.path.isfile(item_path) and not item.startswith("_"):
@@ -110,8 +156,8 @@ class seupAchieve:
         """
         self.create_folders_if_not_exist()
 
-        self.move_folders(self.test_data_path, self.test_archive_path)
-        self.add_timestamp_to_new_files(self.active_folder_path)
+        item_path_list = self.move_folders(self.test_data_path, self.test_archive_path)
+        self.add_timestamp_to_new_files(item_path_list)
         self.move_folders(self.test_data_path, self.test_archive_path)
 
 

@@ -6,7 +6,7 @@ import shutil
 import sys
 
 from environment_setup import EnvironmentSetup
-from seupachieve import seupAchieve
+from set_up_achieve import seupAchieve
 
 
 def extract_month_and_year(file_name: str) -> Tuple[int, int]:
@@ -117,16 +117,17 @@ def move_file_to_year_and_month_folders(file_path: str):
 
 def main():
     # Check if the input folder address is provided in the command line
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <input_folder_address>")
-        sys.exit(1)
+    # if len(sys.argv) != 2:
+    #     print("Usage: python script.py <input_folder_address>")
+    #     sys.exit(1)
 
     input_folder_address = sys.argv[1] if len(sys.argv) > 1 else "."
     test_mode = bool(int(sys.argv[2])) if len(sys.argv) > 2 else True
 
     # Instantiate EnvironmentSetup based on command line arguments
     env_setup = EnvironmentSetup(is_test=test_mode)
-    env_setup.setup_directory()
+    # env_setup.setup_directory()
+    input_folder_address = env_setup.base_dir
     file_ops = seupAchieve(input_folder_address)
     file_ops.to_empty_folder()
 
