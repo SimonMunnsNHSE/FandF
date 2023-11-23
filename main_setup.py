@@ -4,8 +4,9 @@ from datetime import datetime
 import os
 import shutil
 import sys
-from file_operations import FileOperations
+
 from environment_setup import EnvironmentSetup
+from seupachieve import seupAchieve
 
 
 def extract_month_and_year(file_name: str) -> Tuple[int, int]:
@@ -99,18 +100,19 @@ def move_file_to_year_and_month_folders(file_path: str):
     shutil.move(file_path, destination_path)
 
 
-def print_folder_tree(input_folder: str):
-    """
-    Prints the folder tree structure starting from the specified input folder.
+# def print_folder_tree(input_folder: str):
 
-    Args:
-        input_folder (str): The path to the input folder.
+#     """
+#     Prints the folder tree structure starting from the specified input folder.
 
-    Note: This function prints the folder tree structure and does not return a value.
-    """
-    # Example usage (not a typical doctest due to printing)
-    # >>> print_folder_tree("C:\\path\\to\\input\\folder")
-    pass
+#     Args:
+#         input_folder (str): The path to the input folder.
+
+#     Note: This function prints the folder tree structure and does not return a value.
+#     Example usage (not a typical doctest due to printing)
+#     >>> print_folder_tree("C:\\path\\to\\input\\folder")
+#     """
+#     pass
 
 
 def main():
@@ -125,7 +127,7 @@ def main():
     # Instantiate EnvironmentSetup based on command line arguments
     env_setup = EnvironmentSetup(is_test=test_mode)
     env_setup.setup_directory()
-    file_ops = FileOperations(input_folder_address)
+    file_ops = seupAchieve(input_folder_address)
     file_ops.to_empty_folder()
 
     # Move files to year and month folders
@@ -136,7 +138,7 @@ def main():
                 move_file_to_year_and_month_folders(file_path)
 
     # Print updated folder tree structure
-    print_folder_tree(input_folder_address)
+    # print_folder_tree(input_folder_address)
 
 
 if __name__ == "__main__":

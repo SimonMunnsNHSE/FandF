@@ -52,7 +52,7 @@ class TestToEmptyFolder(unittest.TestCase):
             "your_module.os.makedirs"
         ) as mock_makedirs:
             seupAchieve.create_folders_if_not_exist(
-                self.test_environment_setup.test_dir
+                self.test_environment_setup.test_dir  # type: ignore
             )
             mock_makedirs.assert_any_call(self.test_data_path)
             mock_makedirs.assert_any_call(self.test_archive_path)
