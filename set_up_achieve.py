@@ -110,13 +110,16 @@ class seupAchieve:
             >>> os.path.exists("/path/to/root/test_archive/folder_to_move")
             True
         """
-        pdb.set_trace()
         item_path_list = []
         for item in os.listdir(source_folder):
             item_path = os.path.join(source_folder, item)
             if os.path.isdir(item_path) and not item.startswith("_"):
                 pdb.set_trace()
-                shutil.move(item_path, os.path.join(destination_folder, item))
+                current_datetime = datetime.now().strftime("%Y%m%d%H%M%S")
+                shutil.move(
+                    item_path,
+                    os.path.join(destination_folder, item + "_" + current_datetime),
+                )
                 item_path_list.append(item_path)
 
         return item_path_list

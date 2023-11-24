@@ -1,9 +1,12 @@
+import pdb
+import time
 from typing import Tuple
 import re
 from datetime import datetime
 import os
 import shutil
 import sys
+import winsound
 
 from environment_setup import EnvironmentSetup
 from set_up_achieve import seupAchieve
@@ -25,35 +28,29 @@ def extract_month_and_year(file_name: str) -> Tuple[int, int]:
     (2023, 4)
     >>> extract_month_and_year("2023-Apr_file.txt")
     (2023, 4)
+    >>> extract_month_and_year("Dec 2019")
+    (2019, 12)
+    >>> extract_month_and_year("202009")
+    (2020, 9)
     """
-    # Regular expression pattern for matching yyyy.mm or mm.yyyy
-    pattern = re.compile(r"(\d{4})[.-](\d{2})")
+    # Regular expression pattern for matching yyyy.mm or mm.yyyy or Dec 2019 or 202009
+    pattern = re.compile(
+        r"(\d{4})[.-](\d{2})|(\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b)[ .]*(\d{4})|(\d{4})(\d{2})"
+    )
 
     match = pattern.search(file_name)
     if match:
-        year, month = map(int, match.groups())
+        # Check which group is matched and extract year and month accordingly
+        if match.group(1):
+            year, month = map(int, match.group(1, 2))
+        elif match.group(3) and match.group(4):
+            year, month = map(int, (match.group(4), match.group(3)))
+        elif match.group(5) and match.group(6):
+            year, month = map(int, match.group(5, 6))
+        else:
+            raise ValueError("Unexpected match groups")
         return year, month
     else:
-        # Try to find month strings in the file name and map them to numeric values
-        month_strings = [
-            "jan",
-            "feb",
-            "mar",
-            "apr",
-            "may",
-            "jun",
-            "jul",
-            "aug",
-            "sep",
-            "oct",
-            "nov",
-            "dec",
-        ]
-        for index, month_str in enumerate(month_strings, start=1):
-            if month_str in file_name.lower():
-                current_date = datetime.now()
-                return current_date.year, index
-
         # Default to current year and month if no pattern or relevant month string is found
         current_date = datetime.now()
         return current_date.year, current_date.month
@@ -115,6 +112,27 @@ def move_file_to_year_and_month_folders(file_path: str):
 #     pass
 
 
+def beep_when_done(duration: float = 2.0):
+    """
+    Beep for the specified duration when the program is done.
+
+    Args:
+        duration (float): The duration of the beep in seconds. Defaults to 2.0 seconds.
+
+    Returns:
+        None
+
+    Example:
+        >>> beep_when_done(3.5)  # This will beep for 3.5 seconds when the program is done.
+    """
+    time.sleep(
+        5
+    )  # Simulating some processing time, replace this with your actual program logic.
+    winsound.Beep(
+        640, int(duration * 1000)
+    )  # Beep at 440 Hz for the specified duration.
+
+
 def main():
     # Check if the input folder address is provided in the command line
     # if len(sys.argv) != 2:
@@ -129,17 +147,18 @@ def main():
     # env_setup.setup_directory()
     input_folder_address = env_setup.base_dir
     file_ops = seupAchieve(input_folder_address)
-    file_ops.move_folders(file_ops.test_data_path, file_ops.test_archive_path)
+    # file_ops.move_folders(file_ops.test_data_path, file_ops.test_archive_path)
 
     # Move files to year and month folders
     for root, _, files in os.walk(input_folder_address):
-        if "CSV" in root:
+        if "CSV" in root or not "test_archive" in root:
             for file_name in files:
                 file_path = os.path.join(root, file_name)
                 move_file_to_year_and_month_folders(file_path)
 
     # Print updated folder tree structure
     # print_folder_tree(input_folder_address)
+    beep_when_done()
 
 
 if __name__ == "__main__":
