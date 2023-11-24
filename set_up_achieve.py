@@ -1,5 +1,6 @@
 # file_operations.py
 import os
+import pdb
 import shutil
 from datetime import datetime
 
@@ -15,7 +16,10 @@ class seupAchieve:
         active_folder_path (str): The path to the "active" folder inside "test_archive".
     """
 
-    def __init__(self, root_folder):
+    def __init__(
+        self,
+        root_folder,
+    ):
         """
         Initialize the seupAchive instance.
 
@@ -28,20 +32,23 @@ class seupAchieve:
             self.test_data_path = self.navigate_up_to_folder(root_folder, "test_data")
         else:
             self.test_data_path = os.path.join(root_folder, "test_data")
-        if "test_archive" not in root_folder:
-            self.test_archive_path = os.path.join(root_folder, "test_archive")
 
         if self.navigate_up_to_folder(root_folder, "test_archive") != "":
             self.test_archive_path = self.navigate_up_to_folder(
                 root_folder, "test_archive"
             )
         else:
-            self.test_data_path = os.path.join(root_folder, "test_archive")
-
-        if self.navigate_up_to_folder(root_folder, "active") != "":
-            self.test_archive_path = self.navigate_up_to_folder(root_folder, "active")
+            self.test_archive_path = os.path.join(root_folder, "test_archive")
+        # live
+        if self.navigate_up_to_folder(root_folder, "live_active") != "":
+            self.live_active = self.navigate_up_to_folder(root_folder, "live_active")
         else:
-            self.test_data_path = os.path.join(root_folder, "active")
+            self.live_active = os.path.join(root_folder, "live_active")
+
+        if self.navigate_up_to_folder(root_folder, "live_data") != "":
+            self.live_active = self.navigate_up_to_folder(root_folder, "live_data")
+        else:
+            self.live_active = os.path.join(root_folder, "live_data")
 
     def navigate_up_to_folder(self, start_path, target_folder):
         """
@@ -103,10 +110,12 @@ class seupAchieve:
             >>> os.path.exists("/path/to/root/test_archive/folder_to_move")
             True
         """
+        pdb.set_trace()
         item_path_list = []
         for item in os.listdir(source_folder):
             item_path = os.path.join(source_folder, item)
             if os.path.isdir(item_path) and not item.startswith("_"):
+                pdb.set_trace()
                 shutil.move(item_path, os.path.join(destination_folder, item))
                 item_path_list.append(item_path)
 
@@ -119,7 +128,7 @@ class seupAchieve:
         Args:
             folder (str): The folder path.
 
-        Returns:
+        Returns::
             None
 
         Examples:

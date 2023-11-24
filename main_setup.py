@@ -129,7 +129,7 @@ def main():
     # env_setup.setup_directory()
     input_folder_address = env_setup.base_dir
     file_ops = seupAchieve(input_folder_address)
-    file_ops.to_empty_folder()
+    file_ops.move_folders(file_ops.test_data_path, file_ops.test_archive_path)
 
     # Move files to year and month folders
     for root, _, files in os.walk(input_folder_address):
